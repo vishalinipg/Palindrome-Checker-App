@@ -1,43 +1,47 @@
 /**
  * =============================================================
- * MAIN CLASS - UseCase11PalindromeCheckerApp
+ * MAIN CLASS - UseCase12PalindromeCheckerApp
  * =============================================================
  *
- * Use Case 11: Object-Oriented Palindrome Service
+ * Use Case 12: Strategy Pattern for Palindrome Algorithms
  *
  * Description:
- * This class demonstrates palindrome validation using
- * object-oriented design.
+ * This class demonstrates how different palindrome
+ * validation algorithms can be selected dynamically
+ * at runtime using the Strategy Design Pattern.
  *
- * The palindrome logic is encapsulated inside a
- * PalindromeService class.
+ * At this stage, the application:
+ * - Defines a common PalindromeStrategy interface
+ * - Implements a concrete Stack based strategy
+ * - Injects the strategy at runtime
+ * - Executes the selected algorithm
  *
- * This improves:
- * - Reusability
- * - Maintainability
- * - Separation of concerns
+ * No performance comparison is done in this use case.
+ * The focus is on algorithm interchangeability.
+ *
+ * The goal is to teach extensible algorithm design.
  *
  * @author Vishalini P G
- * @version 11.0
+ * @version 12.0
  */
-
 public class PalindromeCheckerApp {
 
     /**
-     * Application entry point for UC11.
-     *
-     * @param args Command-line arguments
+     * Application entry point.
      */
     public static void main(String[] args) {
 
         // Input string
-        String input = "racecar";
+        String input = "Level";
 
-        // Create service object
-        PalindromeService service = new PalindromeService();
+        // Normalize input for case-insensitive comparison
+        input = input.toLowerCase();
 
-        // Call service method
-        boolean result = service.checkPalindrome(input);
+        // Inject strategy at runtime
+        PalindromeStrategy strategy = new StackStrategy();
+
+        // Execute selected algorithm
+        boolean result = strategy.check(input);
 
         // Display result
         System.out.println("Input : " + input);
@@ -46,29 +50,55 @@ public class PalindromeCheckerApp {
 }
 
 /**
- * Service class that contains palindrome logic.
+ * =============================================================
+ * INTERFACE - PalindromeStrategy
+ * =============================================================
+ *
+ * This interface defines a contract for all
+ * palindrome checking algorithms.
+ *
+ * Any new algorithm must implement this interface
+ * and provide its own validation logic.
  */
-class PalindromeService {
+interface PalindromeStrategy {
+
+    boolean check(String input);
+}
+
+/**
+ * =============================================================
+ * CLASS - StackStrategy
+ * =============================================================
+ *
+ * This class provides a Stack based implementation
+ * of the PalindromeStrategy interfoce.
+ *
+ * It uses LIFO behavior to reverse characters
+ * and compare them with the original sequence.
+ */
+class StackStrategy implements PalindromeStrategy {
 
     /**
-     * Checks whether the input string is a palindrome.
+     * Implements palindrome validation using Stack.
      *
-     * @param input Input string
+     * @param input String to validate
      * @return true if palindrome, false otherwise
      */
-    public boolean checkPalindrome(String input) {
+    public boolean check(String input) {
 
-        // Initialize pointers
-        int start = 0;
-        int end = input.length() - 1;
+        // Create a stack to store characters
+        java.util.Stack<Character> stack = new java.util.Stack<>();
 
-        // Compare characters moving inward
-        while (start < end) {
-            if (input.charAt(start) != input.charAt(end)) {
+        // Push each character of the input string onto the stack
+        for (char c : input.toCharArray()) {
+            stack.push(c);
+        }
+
+        // Compare characters by popping from the stack
+        for (char c : input.toCharArray()) {
+            if (c != stack.pop()) {
                 return false;
             }
-            start++;
-            end--;
         }
 
         return true;
